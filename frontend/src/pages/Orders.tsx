@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import api from '../services/api';
+import api, { downloadCsv } from '../services/api';
 import { Order, OrderStatus, PageResponse, ApiResponse } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { EmptyState } from '../components/common/EmptyState';
 import { Badge } from '../components/common/Badge';
 import { OrderDetailModal } from './modals/OrderDetailModal';
+import { InvoiceModal } from '../components/orders/InvoiceModal';
 import {
   ShoppingCart,
   Plus,
   Search,
   Filter,
   Eye,
+  Printer,
+  Download,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -26,6 +29,8 @@ export const Orders: React.FC = () => {
 
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [invoiceOrder, setInvoiceOrder] = useState<Order | null>(null);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
 
   const { data, isLoading } = useQuery<ApiResponse<PageResponse<Order>>>({
     queryKey: ['orders', search, status, page],
@@ -59,14 +64,23 @@ export const Orders: React.FC = () => {
             Lifecycle: Pending → Confirmed → Processing → Shipped → Delivered (or Cancelled)
           </p>
         </div>
-        {hasRole(['ADMIN', 'SALES_STAFF', 'INVENTORY_MANAGER']) && (
-          <Link
-            to="/orders/create"
-            className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shrink-0"
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => downloadCsv('/orders/export/csv', `orders_${new Date().toISOString().slice(0, 10)}.csv`)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
           >
-            <Plus className="w-4 h-4" /> Create Order
-          </Link>
-        )}
+            <Download className="w-3.5 h-3.5" /> Export CSV
+          </button>
+          {hasRole(['ADMIN', 'SALES_STAFF', 'INVENTORY_MANAGER']) && (
+            <Link
+              to="/orders/create"
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shrink-0"
+            >
+              <Plus className="w-4 h-4" /> Create Order
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Filter Ribbon */}
@@ -161,12 +175,24 @@ export const Orders: React.FC = () => {
                         {new Date(ord.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-3.5 text-right" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          onClick={() => handleOpenDetail(ord)}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-600 hover:text-primary-600 hover:bg-primary-50 transition-colors border border-slate-200"
-                        >
-                          <Eye className="w-3.5 h-3.5" /> View
-                        </button>
+                        <div className="inline-flex items-center gap-1.5 justify-end">
+                          <button
+                            onClick={() => {
+                              setInvoiceOrder(ord);
+                              setIsInvoiceOpen(true);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200"
+                            title="Print Invoice / Packing Slip"
+                          >
+                            <Printer className="w-3.5 h-3.5" /> Print
+                          </button>
+                          <button
+                            onClick={() => handleOpenDetail(ord)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-slate-600 hover:text-primary-600 hover:bg-primary-50 transition-colors border border-slate-200"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> View
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -210,6 +236,17 @@ export const Orders: React.FC = () => {
             setSelectedOrder(null);
           }}
           order={selectedOrder}
+        />
+      )}
+
+      {invoiceOrder && (
+        <InvoiceModal
+          isOpen={isInvoiceOpen}
+          onClose={() => {
+            setIsInvoiceOpen(false);
+            setInvoiceOrder(null);
+          }}
+          order={invoiceOrder}
         />
       )}
     </div>

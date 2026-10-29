@@ -301,3 +301,44 @@ export interface ApiResponse<T> {
   data: T;
   timestamp: string;
 }
+
+export type StockTransferStatus = 'REQUESTED' | 'IN_TRANSIT' | 'COMPLETED' | 'CANCELLED';
+
+export interface StockTransferItem {
+  id?: number;
+  productId: number;
+  productSku: string;
+  productName: string;
+  quantity: number;
+}
+
+export interface StockTransfer {
+  id: number;
+  transferNumber: string;
+  sourceWarehouseId: number;
+  sourceWarehouseName: string;
+  sourceWarehouseCode: string;
+  destinationWarehouseId: number;
+  destinationWarehouseName: string;
+  destinationWarehouseCode: string;
+  status: StockTransferStatus;
+  notes?: string;
+  createdBy: string;
+  dispatchedBy?: string;
+  receivedBy?: string;
+  dispatchedAt?: string;
+  receivedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  items: StockTransferItem[];
+}
+
+export interface CreateStockTransferRequest {
+  sourceWarehouseId: number;
+  destinationWarehouseId: number;
+  notes?: string;
+  items: {
+    productId: number;
+    quantity: number;
+  }[];
+}

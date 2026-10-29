@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import api from '../services/api';
+import api, { downloadCsv } from '../services/api';
 import { StockMovement, MovementType, PageResponse, ApiResponse } from '../types';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { EmptyState } from '../components/common/EmptyState';
@@ -11,6 +11,7 @@ import {
   ChevronRight,
   ArrowUpRight,
   ArrowDownLeft,
+  Download,
 } from 'lucide-react';
 
 export const StockMovements: React.FC = () => {
@@ -41,6 +42,15 @@ export const StockMovements: React.FC = () => {
           <p className="text-xs text-slate-500">
             Immutable, append-only history of every stock change, reservation, receipt, and adjustment
           </p>
+        </div>
+        <div>
+          <button
+            type="button"
+            onClick={() => downloadCsv('/inventory/movements/export/csv', `movements_${new Date().toISOString().slice(0, 10)}.csv`)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" /> Export CSV
+          </button>
         </div>
       </div>
 

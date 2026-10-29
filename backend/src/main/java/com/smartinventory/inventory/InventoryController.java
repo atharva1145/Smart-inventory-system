@@ -10,10 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -76,5 +78,23 @@ public class InventoryController {
     @Operation(summary = "Get inventory valuation report at cost")
     public ResponseEntity<ApiResponse<ValuationReportDTO>> getValuationReport() {
         return ResponseEntity.ok(ApiResponse.success(inventoryService.getValuationReport()));
+    }
+
+    @GetMapping(value = "/export/csv", produces = "text/csv")
+    @Operation(summary = "Export current inventory balances to CSV")
+    public ResponseEntity<String> exportInventoryCsv() {
+        String csv = inventoryService.exportInventoryCsv();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"inventory_" + LocalDate.now() + ".csv\"")
+                .body(csv);
+    }
+
+    @GetMapping(value = "/movements/export/csv", produces = "text/csv")
+    @Operation(summary = "Export inventory movement ledger to CSV")
+    public ResponseEntity<String> exportMovementsCsv() {
+        String csv = inventoryService.exportMovementsCsv();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"inventory_movements_" + LocalDate.now() + ".csv\"")
+                .body(csv);
     }
 }

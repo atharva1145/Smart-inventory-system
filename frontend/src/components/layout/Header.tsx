@@ -3,14 +3,17 @@ import { useAuth } from '../../context/AuthContext';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
 import { Notification, ApiResponse } from '../../types';
-import { Bell, User, LogOut, CheckCheck, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Bell, User, LogOut, CheckCheck, AlertCircle, Scan } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { BarcodeScannerModal } from '../common/BarcodeScannerModal';
 
 export const Header: React.FC<{ title: string; subtitle?: string }> = ({ title, subtitle }) => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   const { data: notificationsData } = useQuery<ApiResponse<Notification[]>>({
     queryKey: ['recentNotifications'],
@@ -50,7 +53,18 @@ export const Header: React.FC<{ title: string; subtitle?: string }> = ({ title, 
         {subtitle && <p className="text-xs text-slate-500">{subtitle}</p>}
       </div>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
+        {/* Quick Barcode Scanner Button */}
+        <button
+          type="button"
+          onClick={() => setShowScanner(true)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200"
+          title="Scan SKU Barcode"
+        >
+          <Scan className="w-4 h-4 text-primary-600" />
+          <span className="hidden sm:inline">Scan SKU</span>
+        </button>
+
         {/* Notification Bell */}
         <div className="relative">
           <button
@@ -158,6 +172,14 @@ export const Header: React.FC<{ title: string; subtitle?: string }> = ({ title, 
           )}
         </div>
       </div>
+
+      <BarcodeScannerModal
+        isOpen={showScanner}
+        onClose={() => setShowScanner(false)}
+        onScan={(sku) => {
+          navigate(`/products?search=${encodeURIComponent(sku)}`);
+        }}
+      />
     </header>
   );
 };

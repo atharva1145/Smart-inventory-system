@@ -12,9 +12,11 @@ import java.util.stream.Collectors;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final SseNotificationService sseNotificationService;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, SseNotificationService sseNotificationService) {
         this.notificationRepository = notificationRepository;
+        this.sseNotificationService = sseNotificationService;
     }
 
     @Transactional(readOnly = true)
@@ -39,7 +41,8 @@ public class NotificationService {
     public void createNotificationIfNotExists(NotificationType type, String title, String message, String referenceId) {
         if (!notificationRepository.existsByTypeAndReferenceIdAndReadFalse(type, referenceId)) {
             Notification notification = new Notification(type, title, message, referenceId);
-            notificationRepository.save(notification);
+            Notification saved = notificationRepository.save(notification);
+            sseNotificationService.broadcast("NOTIFICATION", NotificationDTO.fromEntity(saved));
         }
     }
 

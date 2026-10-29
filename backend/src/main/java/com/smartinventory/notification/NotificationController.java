@@ -7,8 +7,12 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.List;
 import java.util.Map;
@@ -20,9 +24,18 @@ import java.util.Map;
 public class NotificationController {
 
     private final NotificationService notificationService;
+    private final SseNotificationService sseNotificationService;
 
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService, SseNotificationService sseNotificationService) {
         this.notificationService = notificationService;
+        this.sseNotificationService = sseNotificationService;
+    }
+
+    @GetMapping(value = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @Operation(summary = "Real-time Server-Sent Events notification stream")
+    public SseEmitter streamNotifications(@AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails != null ? userDetails.getUsername() : "anonymous";
+        return sseNotificationService.subscribe(username);
     }
 
     @GetMapping("/recent")

@@ -321,6 +321,49 @@ public class InventoryService {
         return new ValuationReportDTO(totalProducts, totalOnHandUnits, totalValuation, items);
     }
 
+    @Transactional(readOnly = true)
+    public String exportInventoryCsv() {
+        List<InventoryBalance> balances = balanceRepository.findAll();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Product ID,SKU,Product Name,Category,Warehouse,On Hand,Reserved,Available,Reorder Level,Cost Price,Selling Price\n");
+        for (InventoryBalance b : balances) {
+            Product p = b.getProduct();
+            Warehouse w = b.getWarehouse();
+            sb.append(p.getId()).append(",");
+            sb.append('"').append(p.getSku()).append("\",");
+            sb.append('"').append(p.getName().replace("\"", "\"\"")).append("\",");
+            sb.append('"').append(p.getCategory() != null ? p.getCategory().getName().replace("\"", "\"\"") : "Uncategorized").append("\",");
+            sb.append('"').append(w.getName().replace("\"", "\"\"")).append("\",");
+            sb.append(b.getOnHandQuantity()).append(",");
+            sb.append(b.getReservedQuantity()).append(",");
+            sb.append(b.getAvailableQuantity()).append(",");
+            sb.append(p.getReorderLevel()).append(",");
+            sb.append(p.getCostPrice()).append(",");
+            sb.append(p.getSellingPrice()).append("\n");
+        }
+        return sb.toString();
+    }
+
+    @Transactional(readOnly = true)
+    public String exportMovementsCsv() {
+        List<InventoryMovement> movements = movementRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        StringBuilder sb = new StringBuilder();
+        sb.append("Movement ID,Date,Product SKU,Product Name,Warehouse,Type,Quantity Change,Reference ID,Actor,Reason\n");
+        for (InventoryMovement m : movements) {
+            sb.append(m.getId()).append(",");
+            sb.append('"').append(m.getCreatedAt()).append("\",");
+            sb.append('"').append(m.getProduct().getSku()).append("\",");
+            sb.append('"').append(m.getProduct().getName().replace("\"", "\"\"")).append("\",");
+            sb.append('"').append(m.getWarehouse().getName().replace("\"", "\"\"")).append("\",");
+            sb.append(m.getMovementType()).append(",");
+            sb.append(m.getQuantityChange()).append(",");
+            sb.append('"').append(m.getReferenceId() != null ? m.getReferenceId() : "").append("\",");
+            sb.append('"').append(m.getActorUsername()).append("\",");
+            sb.append('"').append(m.getReason() != null ? m.getReason().replace("\"", "\"\"") : "").append("\"\n");
+        }
+        return sb.toString();
+    }
+
     private void checkLowStockAlert(InventoryBalance balance) {
         int available = balance.getAvailableQuantity();
         int reorderLevel = balance.getProduct().getReorderLevel();

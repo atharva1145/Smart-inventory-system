@@ -34,13 +34,17 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitingFilter rateLimitingFilter;
 
     @Value("${app.cors.allowed-origins:http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}")
     private String allowedOrigins;
 
-    public SecurityConfig(CustomUserDetailsService userDetailsService, JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(CustomUserDetailsService userDetailsService,
+                          JwtAuthenticationFilter jwtAuthenticationFilter,
+                          RateLimitingFilter rateLimitingFilter) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.rateLimitingFilter = rateLimitingFilter;
     }
 
     @Bean
@@ -93,6 +97,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

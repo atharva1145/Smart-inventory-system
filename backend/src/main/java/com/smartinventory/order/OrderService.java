@@ -290,6 +290,25 @@ public class OrderService {
         return updateOrderStatus(orderId, new UpdateOrderStatusRequest(OrderStatus.CANCELLED, reason), actorUsername);
     }
 
+    @Transactional(readOnly = true)
+    public String exportOrdersCsv() {
+        List<Order> orders = orderRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+        StringBuilder sb = new StringBuilder();
+        sb.append("Order Number,Date,Customer,Status,Payment Status,Items Count,Subtotal,Discount,Total Amount\n");
+        for (Order o : orders) {
+            sb.append('"').append(o.getOrderNumber()).append("\",");
+            sb.append('"').append(o.getCreatedAt()).append("\",");
+            sb.append('"').append(o.getCustomer() != null ? o.getCustomer().getName().replace("\"", "\"\"") : "").append("\",");
+            sb.append(o.getStatus()).append(",");
+            sb.append(o.getPaymentStatus()).append(",");
+            sb.append(o.getItems() != null ? o.getItems().size() : 0).append(",");
+            sb.append(o.getSubtotal()).append(",");
+            sb.append(o.getDiscountAmount()).append(",");
+            sb.append(o.getTotalAmount()).append("\n");
+        }
+        return sb.toString();
+    }
+
     private synchronized String generateOrderNumber() {
         String datePart = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         long seq = ORDER_SEQ.incrementAndGet();

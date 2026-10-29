@@ -10,11 +10,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -46,6 +48,15 @@ public class OrderController {
     @Operation(summary = "Get order by ID")
     public ResponseEntity<ApiResponse<OrderDTO>> getOrderById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success(orderService.getOrderById(id)));
+    }
+
+    @GetMapping(value = "/export/csv", produces = "text/csv")
+    @Operation(summary = "Export orders to CSV")
+    public ResponseEntity<String> exportOrdersCsv() {
+        String csv = orderService.exportOrdersCsv();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"orders_" + LocalDate.now() + ".csv\"")
+                .body(csv);
     }
 
     @GetMapping("/number/{orderNumber}")

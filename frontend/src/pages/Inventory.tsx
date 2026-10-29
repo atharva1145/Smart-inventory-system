@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import api from '../services/api';
+import api, { downloadCsv } from '../services/api';
 import { InventoryOverview, PageResponse, ApiResponse } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { Badge } from '../components/common/Badge';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { EmptyState } from '../components/common/EmptyState';
 import { StockAdjustmentModal } from './modals/StockAdjustmentModal';
+import { BarcodeScannerModal } from '../components/common/BarcodeScannerModal';
 import {
   Boxes,
   Sliders,
@@ -16,6 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowUpDown,
+  Download,
+  Scan,
 } from 'lucide-react';
 
 export const Inventory: React.FC = () => {
@@ -26,6 +29,7 @@ export const Inventory: React.FC = () => {
 
   const [isAdjustOpen, setIsAdjustOpen] = useState(false);
   const [targetProductId, setTargetProductId] = useState<number | undefined>(undefined);
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
 
   const { data, isLoading } = useQuery<ApiResponse<PageResponse<InventoryOverview>>>({
     queryKey: ['inventoryOverview', search, lowStockOnly, page],
@@ -58,14 +62,30 @@ export const Inventory: React.FC = () => {
             Real-time physical on-hand, reserved orders, and available stock levels
           </p>
         </div>
-        {hasRole(['ADMIN', 'INVENTORY_MANAGER']) && (
+        <div className="flex items-center gap-2">
           <button
-            onClick={() => handleOpenAdjust()}
-            className="inline-flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shrink-0"
+            type="button"
+            onClick={() => setIsScannerOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
           >
-            <Sliders className="w-4 h-4" /> Manual Adjustment
+            <Scan className="w-3.5 h-3.5 text-primary-600" /> Scan Barcode
           </button>
-        )}
+          <button
+            type="button"
+            onClick={() => downloadCsv('/inventory/export/csv', `inventory_${new Date().toISOString().slice(0, 10)}.csv`)}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            <Download className="w-3.5 h-3.5" /> Export CSV
+          </button>
+          {hasRole(['ADMIN', 'INVENTORY_MANAGER']) && (
+            <button
+              onClick={() => handleOpenAdjust()}
+              className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors shadow-sm shrink-0"
+            >
+              <Sliders className="w-4 h-4" /> Manual Adjustment
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filter Ribbon */}
@@ -221,6 +241,15 @@ export const Inventory: React.FC = () => {
         isOpen={isAdjustOpen}
         onClose={() => setIsAdjustOpen(false)}
         defaultProductId={targetProductId}
+      />
+
+      <BarcodeScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={(sku) => {
+          setSearch(sku);
+          setPage(0);
+        }}
       />
     </div>
   );

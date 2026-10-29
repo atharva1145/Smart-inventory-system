@@ -8,6 +8,7 @@ import {
   Boxes,
   History,
   AlertTriangle,
+  ArrowLeftRight,
   Truck,
   ShoppingBag,
   PackageCheck,
@@ -68,6 +69,9 @@ export const Sidebar: React.FC = () => {
               </NavLink>
               <NavLink to="/inventory/movements" className={navLinkClass}>
                 <History className="w-4 h-4" /> Movement History
+              </NavLink>
+              <NavLink to="/transfers" className={navLinkClass}>
+                <ArrowLeftRight className="w-4 h-4" /> Stock Transfers
               </NavLink>
               <NavLink to="/inventory/alerts" className={navLinkClass}>
                 <AlertTriangle className="w-4 h-4" /> Low Stock Alerts

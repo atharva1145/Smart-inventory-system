@@ -4,6 +4,7 @@ import { Order, OrderStatus, ApiResponse } from '../../types';
 import api, { getErrorMessage } from '../../services/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '../../components/common/Badge';
+import { Barcode } from '../../components/common/Barcode';
 import {
   Printer,
   CheckCircle,
@@ -93,6 +94,9 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             {order.idempotencyKey && (
               <p className="text-[10px] font-mono text-slate-400">Key: {order.idempotencyKey}</p>
             )}
+            <div className="pt-2 flex justify-end">
+              <Barcode value={order.orderNumber} height={32} />
+            </div>
           </div>
         </div>
 

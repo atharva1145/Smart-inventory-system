@@ -8,6 +8,7 @@ import { Products } from './pages/Products';
 import { Categories } from './pages/Categories';
 import { Inventory } from './pages/Inventory';
 import { StockMovements } from './pages/StockMovements';
+import { StockTransfers } from './pages/StockTransfers';
 import { LowStockAlerts } from './pages/LowStockAlerts';
 import { Suppliers } from './pages/Suppliers';
 import { PurchaseOrders } from './pages/PurchaseOrders';
@@ -63,6 +64,7 @@ export const App: React.FC = () => {
         <Route path="categories" element={<Categories />} />
         <Route path="inventory" element={<Inventory />} />
         <Route path="inventory/movements" element={<StockMovements />} />
+        <Route path="transfers" element={<StockTransfers />} />
         <Route path="inventory/alerts" element={<LowStockAlerts />} />
         <Route path="suppliers" element={<Suppliers />} />
         <Route path="purchase-orders" element={<PurchaseOrders />} />

@@ -46,4 +46,25 @@ export function getErrorMessage(error: unknown): string {
   return 'An unexpected error occurred';
 }
 
+export async function downloadCsv(endpoint: string, filename: string): Promise<void> {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`/api/v1${endpoint}`, {
+    headers: {
+      Authorization: `Bearer ${token || ''}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error('Failed to download CSV');
+  }
+  const blob = await response.blob();
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  window.URL.revokeObjectURL(downloadUrl);
+}
+
 export default api;
