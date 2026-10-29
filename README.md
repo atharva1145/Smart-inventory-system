@@ -25,6 +25,12 @@ A production-grade, modular monolith **Smart Inventory & Order Management System
 | **Untracked supplier deliveries** | Purchase Order lifecycle (`DRAFT` → `APPROVED` → `PARTIALLY_RECEIVED` → `RECEIVED`) with partial receipt tracking and over-receipt rejection. |
 | **Missing audit trails** | Append-only, immutable `inventory_movements` table recording actor, delta, timestamp, reference ID, and movement type. |
 | **Unauthorized changes** | Role-Based Access Control (`ADMIN`, `INVENTORY_MANAGER`, `SALES_STAFF`, `VIEWER`) enforced on Spring Security method and endpoint levels. |
+| **Multi-warehouse imbalances** | Inter-warehouse Stock Transfers (`REQUESTED` → `IN_TRANSIT` → `COMPLETED`) with locked source reservations and in-transit tracking. |
+| **Data entry speed & errors** | Interactive Barcode & QR Code scanner (webcam, USB scanner, and test simulation) + Code 128 vector barcode renderer. |
+| **Physical dispatch documentation** | One-click printable Commercial Invoices and Warehouse Packing Slips with QA check-off sheets. |
+| **Delayed inventory notifications** | Real-time Server-Sent Events (SSE) stream pushing low-stock and order alerts directly to connected browsers. |
+| **Accounting & reporting friction** | Server-side and client-side one-click CSV data export for orders, inventory balances, and movements. |
+| **Brute-force security risks** | In-memory token bucket rate limiting on authentication login endpoints. |
 
 ---
 
