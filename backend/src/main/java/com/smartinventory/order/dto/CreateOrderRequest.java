@@ -22,6 +22,9 @@ public class CreateOrderRequest {
     @DecimalMin(value = "0.0", inclusive = true)
     private BigDecimal discountAmount = BigDecimal.ZERO;
 
+    @DecimalMin(value = "0.0", inclusive = true)
+    private BigDecimal taxRate = BigDecimal.ZERO;
+
     private String idempotencyKey;
 
     private String notes;
@@ -59,6 +62,14 @@ public class CreateOrderRequest {
 
     public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getTaxRate() {
+        return taxRate != null ? taxRate : BigDecimal.ZERO;
+    }
+
+    public void setTaxRate(BigDecimal taxRate) {
+        this.taxRate = taxRate;
     }
 
     public String getIdempotencyKey() {

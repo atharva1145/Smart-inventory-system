@@ -122,6 +122,8 @@ export interface Customer {
   email?: string;
   phone?: string;
   address?: string;
+  totalOrders?: number;
+  totalSpend?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -167,6 +169,7 @@ export interface Order {
   paymentStatus: PaymentStatus;
   subtotal: number;
   discountAmount: number;
+  taxAmount?: number;
   totalAmount: number;
   idempotencyKey?: string;
   notes?: string;
@@ -341,4 +344,19 @@ export interface CreateStockTransferRequest {
     productId: number;
     quantity: number;
   }[];
+}
+
+export interface RestockSuggestion {
+  productId: number;
+  sku: string;
+  productName: string;
+  categoryName?: string;
+  currentAvailable: number;
+  reorderLevel: number;
+  deficitQuantity: number;
+  suggestedQuantity: number;
+  unitCost: number;
+  estimatedCost: number;
+  suggestedSupplierId?: number;
+  suggestedSupplierName?: string;
 }

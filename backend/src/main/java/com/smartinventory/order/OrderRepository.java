@@ -50,6 +50,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT COALESCE(SUM(o.totalAmount), 0.0) FROM Order o WHERE o.status <> 'CANCELLED'")
     Double sumTotalOrderValue();
 
+    @Query("SELECT COUNT(o) FROM Order o WHERE o.customer.id = :customerId AND o.status <> 'CANCELLED'")
+    long countOrdersByCustomerId(@Param("customerId") Long customerId);
+
+    @Query("SELECT COALESCE(SUM(o.totalAmount), 0.0) FROM Order o WHERE o.customer.id = :customerId AND o.status <> 'CANCELLED'")
+    Double sumSpendByCustomerId(@Param("customerId") Long customerId);
+
     @Query("SELECT o FROM Order o JOIN FETCH o.customer ORDER BY o.createdAt DESC")
     List<Order> findRecentOrders(Pageable pageable);
 }

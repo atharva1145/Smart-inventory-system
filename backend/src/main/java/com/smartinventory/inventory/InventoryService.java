@@ -8,6 +8,8 @@ import com.smartinventory.notification.NotificationService;
 import com.smartinventory.notification.NotificationType;
 import com.smartinventory.product.Product;
 import com.smartinventory.product.ProductRepository;
+import com.smartinventory.supplier.Supplier;
+import com.smartinventory.supplier.SupplierRepository;
 import com.smartinventory.warehouse.Warehouse;
 import com.smartinventory.warehouse.WarehouseRepository;
 import org.slf4j.Logger;
@@ -31,17 +33,20 @@ public class InventoryService {
     private final ProductRepository productRepository;
     private final WarehouseRepository warehouseRepository;
     private final NotificationService notificationService;
+    private final SupplierRepository supplierRepository;
 
     public InventoryService(InventoryBalanceRepository balanceRepository,
                             InventoryMovementRepository movementRepository,
                             ProductRepository productRepository,
                             WarehouseRepository warehouseRepository,
-                            NotificationService notificationService) {
+                            NotificationService notificationService,
+                            SupplierRepository supplierRepository) {
         this.balanceRepository = balanceRepository;
         this.movementRepository = movementRepository;
         this.productRepository = productRepository;
         this.warehouseRepository = warehouseRepository;
         this.notificationService = notificationService;
+        this.supplierRepository = supplierRepository;
     }
 
     @Transactional(readOnly = true)
@@ -293,6 +298,40 @@ public class InventoryService {
         return balanceRepository.findLowStockBalances().stream()
                 .map(InventoryOverviewDTO::fromEntity)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<RestockSuggestionDTO> getRestockSuggestions() {
+        List<InventoryBalance> lowStockBalances = balanceRepository.findLowStockBalances();
+        List<Supplier> activeSuppliers = supplierRepository.findByActiveTrue();
+        Supplier defaultSupplier = activeSuppliers.isEmpty() ? null : activeSuppliers.get(0);
+
+        List<RestockSuggestionDTO> suggestions = new java.util.ArrayList<>();
+        for (InventoryBalance b : lowStockBalances) {
+            Product p = b.getProduct();
+            int available = b.getAvailableQuantity();
+            int reorder = p.getReorderLevel();
+            int deficit = Math.max(0, reorder - available);
+            int suggestedQty = Math.max(10, (reorder * 2) - available);
+            BigDecimal unitCost = p.getCostPrice();
+            BigDecimal estimatedCost = unitCost.multiply(BigDecimal.valueOf(suggestedQty));
+
+            suggestions.add(new RestockSuggestionDTO(
+                    p.getId(),
+                    p.getSku(),
+                    p.getName(),
+                    p.getCategory() != null ? p.getCategory().getName() : "General",
+                    available,
+                    reorder,
+                    deficit,
+                    suggestedQty,
+                    unitCost,
+                    estimatedCost,
+                    defaultSupplier != null ? defaultSupplier.getId() : null,
+                    defaultSupplier != null ? defaultSupplier.getName() : "Standard Supplier"
+            ));
+        }
+        return suggestions;
     }
 
     @Transactional(readOnly = true)

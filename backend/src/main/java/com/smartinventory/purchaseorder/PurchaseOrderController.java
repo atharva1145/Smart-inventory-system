@@ -55,6 +55,15 @@ public class PurchaseOrderController {
         return new ResponseEntity<>(ApiResponse.success("Purchase order created successfully", created), HttpStatus.CREATED);
     }
 
+    @PostMapping("/auto-reorder")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY_MANAGER')")
+    @Operation(summary = "Auto-generate draft PO for low-stock items from supplier")
+    public ResponseEntity<ApiResponse<PurchaseOrderDTO>> autoGeneratePurchaseOrder(@RequestParam Long supplierId) {
+        String actor = SecurityUtils.getCurrentUsername();
+        PurchaseOrderDTO created = purchaseOrderService.autoGeneratePurchaseOrder(supplierId, actor);
+        return new ResponseEntity<>(ApiResponse.success("Draft restock purchase order generated", created), HttpStatus.CREATED);
+    }
+
     @PostMapping("/{id}/approve")
     @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY_MANAGER')")
     @Operation(summary = "Approve purchase order", description = "Moves PO from DRAFT to APPROVED so goods receipts can be recorded")

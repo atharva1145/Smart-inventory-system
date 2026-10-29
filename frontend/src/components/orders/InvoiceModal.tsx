@@ -197,6 +197,12 @@ export const InvoiceModal: React.FC<InvoiceModalProps> = ({ order, isOpen, onClo
                     <span>-${Number(order.discountAmount).toFixed(2)}</span>
                   </div>
                 )}
+                {Number(order.taxAmount) > 0 && (
+                  <div className="flex justify-between text-gray-600">
+                    <span>Sales Tax:</span>
+                    <span>+${Number(order.taxAmount).toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="border-t border-gray-300 pt-1.5 flex justify-between font-extrabold text-sm text-gray-900">
                   <span>Total Due:</span>
                   <span>${Number(order.totalAmount).toFixed(2)}</span>

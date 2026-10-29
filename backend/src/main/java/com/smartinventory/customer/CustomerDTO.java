@@ -20,6 +20,8 @@ public class CustomerDTO {
     private String phone;
 
     private String address;
+    private Long totalOrders = 0L;
+    private Double totalSpend = 0.0;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -27,12 +29,18 @@ public class CustomerDTO {
     }
 
     public static CustomerDTO fromEntity(Customer customer) {
+        return fromEntity(customer, 0L, 0.0);
+    }
+
+    public static CustomerDTO fromEntity(Customer customer, Long totalOrders, Double totalSpend) {
         CustomerDTO dto = new CustomerDTO();
         dto.setId(customer.getId());
         dto.setName(customer.getName());
         dto.setEmail(customer.getEmail());
         dto.setPhone(customer.getPhone());
         dto.setAddress(customer.getAddress());
+        dto.setTotalOrders(totalOrders != null ? totalOrders : 0L);
+        dto.setTotalSpend(totalSpend != null ? totalSpend : 0.0);
         dto.setCreatedAt(customer.getCreatedAt());
         dto.setUpdatedAt(customer.getUpdatedAt());
         return dto;
@@ -76,6 +84,22 @@ public class CustomerDTO {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Long getTotalOrders() {
+        return totalOrders;
+    }
+
+    public void setTotalOrders(Long totalOrders) {
+        this.totalOrders = totalOrders;
+    }
+
+    public Double getTotalSpend() {
+        return totalSpend;
+    }
+
+    public void setTotalSpend(Double totalSpend) {
+        this.totalSpend = totalSpend;
     }
 
     public Instant getCreatedAt() {

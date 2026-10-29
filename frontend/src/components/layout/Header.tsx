@@ -15,6 +15,18 @@ export const Header: React.FC<{ title: string; subtitle?: string }> = ({ title, 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
 
+  // Global Keyboard Shortcut: Ctrl+K / Cmd+K triggers Barcode & SKU Scanner
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setShowScanner((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const { data: notificationsData } = useQuery<ApiResponse<Notification[]>>({
     queryKey: ['recentNotifications'],
     queryFn: async () => {
@@ -59,10 +71,13 @@ export const Header: React.FC<{ title: string; subtitle?: string }> = ({ title, 
           type="button"
           onClick={() => setShowScanner(true)}
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200"
-          title="Scan SKU Barcode"
+          title="Scan SKU Barcode (Ctrl+K)"
         >
           <Scan className="w-4 h-4 text-primary-600" />
           <span className="hidden sm:inline">Scan SKU</span>
+          <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-slate-400 bg-white rounded border border-slate-200">
+            Ctrl K
+          </kbd>
         </button>
 
         {/* Notification Bell */}

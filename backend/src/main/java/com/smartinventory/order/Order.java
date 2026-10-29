@@ -52,6 +52,11 @@ public class Order {
 
     @NotNull
     @DecimalMin("0.0")
+    @Column(name = "tax_amount", nullable = false, precision = 12, scale = 2)
+    private BigDecimal taxAmount = BigDecimal.ZERO;
+
+    @NotNull
+    @DecimalMin("0.0")
     @Column(name = "total_amount", nullable = false, precision = 14, scale = 2)
     private BigDecimal totalAmount = BigDecimal.ZERO;
 
@@ -81,7 +86,7 @@ public class Order {
     }
 
     public Order(String orderNumber, Customer customer, OrderStatus status,
-                 BigDecimal subtotal, BigDecimal discountAmount, BigDecimal totalAmount,
+                 BigDecimal subtotal, BigDecimal discountAmount, BigDecimal taxAmount, BigDecimal totalAmount,
                  String idempotencyKey, String notes, String createdBy) {
         this.orderNumber = orderNumber;
         this.customer = customer;
@@ -89,12 +94,19 @@ public class Order {
         this.paymentStatus = PaymentStatus.PENDING;
         this.subtotal = subtotal;
         this.discountAmount = discountAmount != null ? discountAmount : BigDecimal.ZERO;
+        this.taxAmount = taxAmount != null ? taxAmount : BigDecimal.ZERO;
         this.totalAmount = totalAmount;
         this.idempotencyKey = idempotencyKey;
         this.notes = notes;
         this.createdBy = createdBy;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
+    }
+
+    public Order(String orderNumber, Customer customer, OrderStatus status,
+                 BigDecimal subtotal, BigDecimal discountAmount, BigDecimal totalAmount,
+                 String idempotencyKey, String notes, String createdBy) {
+        this(orderNumber, customer, status, subtotal, discountAmount, BigDecimal.ZERO, totalAmount, idempotencyKey, notes, createdBy);
     }
 
     @PreUpdate
@@ -166,6 +178,14 @@ public class Order {
 
     public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getTaxAmount() {
+        return taxAmount != null ? taxAmount : BigDecimal.ZERO;
+    }
+
+    public void setTaxAmount(BigDecimal taxAmount) {
+        this.taxAmount = taxAmount;
     }
 
     public BigDecimal getTotalAmount() {

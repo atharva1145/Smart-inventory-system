@@ -26,6 +26,7 @@ export const CreateOrder: React.FC = () => {
   const [customerId, setCustomerId] = useState<number | ''>('');
   const [warehouseId, setWarehouseId] = useState<number | ''>('');
   const [discountAmount, setDiscountAmount] = useState<number | ''>(0);
+  const [taxRate, setTaxRate] = useState<number>(0.0825); // 8.25% default
   const [notes, setNotes] = useState('');
   const [lines, setLines] = useState<OrderLine[]>([{ productId: '', quantity: 1 }]);
   const [error, setError] = useState<string | null>(null);
@@ -68,6 +69,7 @@ export const CreateOrder: React.FC = () => {
         customerId: Number(customerId),
         warehouseId: warehouseId ? Number(warehouseId) : null,
         discountAmount: discountAmount ? Number(discountAmount) : 0,
+        taxRate: Number(taxRate) || 0,
         idempotencyKey,
         notes,
         items: validItems,
@@ -149,7 +151,10 @@ export const CreateOrder: React.FC = () => {
     }
   }
   const discountVal = Number(discountAmount) || 0;
-  const calculatedTotal = Math.max(0, calculatedSubtotal - discountVal);
+  const taxableSubtotal = Math.max(0, calculatedSubtotal - discountVal);
+  const taxRateVal = Number(taxRate) || 0;
+  const calculatedTax = taxableSubtotal * taxRateVal;
+  const calculatedTotal = taxableSubtotal + calculatedTax;
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -321,12 +326,12 @@ export const CreateOrder: React.FC = () => {
 
           {/* Pricing Calculation Summary */}
           <div className="border-t border-slate-100 pt-4 flex flex-col items-end gap-2 text-xs">
-            <div className="flex justify-between w-64 text-slate-600">
+            <div className="flex justify-between w-72 text-slate-600">
               <span>Subtotal:</span>
               <span className="font-semibold text-slate-900">${calculatedSubtotal.toFixed(2)}</span>
             </div>
 
-            <div className="flex items-center justify-between w-64">
+            <div className="flex items-center justify-between w-72">
               <span className="text-slate-600">Discount ($):</span>
               <input
                 type="number"
@@ -338,7 +343,35 @@ export const CreateOrder: React.FC = () => {
               />
             </div>
 
-            <div className="flex justify-between w-64 text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
+            <div className="flex items-center justify-between w-72">
+              <div className="flex flex-col">
+                <span className="text-slate-600">Sales Tax Rate:</span>
+                <div className="flex gap-1 mt-1">
+                  {[0, 0.05, 0.0825, 0.1].map((rate) => (
+                    <button
+                      key={rate}
+                      type="button"
+                      onClick={() => setTaxRate(rate)}
+                      className={`px-1.5 py-0.5 rounded text-[10px] font-medium transition-colors ${
+                        taxRate === rate
+                          ? 'bg-primary-600 text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {(rate * 100).toFixed(rate === 0.0825 ? 2 : 0)}%
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="block text-[10px] text-slate-400 font-mono">
+                  {(taxRateVal * 100).toFixed(2)}%
+                </span>
+                <span className="font-semibold text-slate-900 font-mono">+${calculatedTax.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <div className="flex justify-between w-72 text-base font-bold text-slate-900 pt-2 border-t border-slate-200">
               <span>Final Total:</span>
               <span className="text-primary-600">${calculatedTotal.toFixed(2)}</span>
             </div>

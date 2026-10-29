@@ -46,4 +46,18 @@ class OrderCalculationTest {
         BigDecimal total = subtotal.subtract(discount).setScale(2, RoundingMode.HALF_UP);
         assertEquals(0, new BigDecimal("84.50").compareTo(total));
     }
+
+    @Test
+    @DisplayName("Tax calculation applies on taxable amount (subtotal - discount) with accurate rounding")
+    void testTaxCalculation() {
+        BigDecimal subtotal = new BigDecimal("100.00");
+        BigDecimal discount = new BigDecimal("10.00");
+        BigDecimal taxable = subtotal.subtract(discount); // 90.00
+        BigDecimal taxRate = new BigDecimal("0.0825"); // 8.25%
+        BigDecimal taxAmount = taxable.multiply(taxRate).setScale(2, RoundingMode.HALF_UP); // 7.43
+        BigDecimal total = taxable.add(taxAmount).setScale(2, RoundingMode.HALF_UP); // 97.43
+
+        assertEquals(0, new BigDecimal("7.43").compareTo(taxAmount));
+        assertEquals(0, new BigDecimal("97.43").compareTo(total));
+    }
 }

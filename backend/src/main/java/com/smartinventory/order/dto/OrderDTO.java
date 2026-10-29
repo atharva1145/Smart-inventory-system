@@ -21,6 +21,7 @@ public class OrderDTO {
     private PaymentStatus paymentStatus;
     private BigDecimal subtotal;
     private BigDecimal discountAmount;
+    private BigDecimal taxAmount;
     private BigDecimal totalAmount;
     private String idempotencyKey;
     private String notes;
@@ -47,6 +48,7 @@ public class OrderDTO {
         dto.setPaymentStatus(order.getPaymentStatus());
         dto.setSubtotal(order.getSubtotal());
         dto.setDiscountAmount(order.getDiscountAmount());
+        dto.setTaxAmount(order.getTaxAmount());
         dto.setTotalAmount(order.getTotalAmount());
         dto.setIdempotencyKey(order.getIdempotencyKey());
         dto.setNotes(order.getNotes());
@@ -140,6 +142,14 @@ public class OrderDTO {
 
     public void setDiscountAmount(BigDecimal discountAmount) {
         this.discountAmount = discountAmount;
+    }
+
+    public BigDecimal getTaxAmount() {
+        return taxAmount;
+    }
+
+    public void setTaxAmount(BigDecimal taxAmount) {
+        this.taxAmount = taxAmount;
     }
 
     public BigDecimal getTotalAmount() {

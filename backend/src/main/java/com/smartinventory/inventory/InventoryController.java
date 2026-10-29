@@ -74,6 +74,12 @@ public class InventoryController {
         return ResponseEntity.ok(ApiResponse.success(inventoryService.getLowStockAlerts()));
     }
 
+    @GetMapping("/restock-suggestions")
+    @Operation(summary = "Get smart restock suggestions for low-stock items")
+    public ResponseEntity<ApiResponse<List<RestockSuggestionDTO>>> getRestockSuggestions() {
+        return ResponseEntity.ok(ApiResponse.success(inventoryService.getRestockSuggestions()));
+    }
+
     @GetMapping("/valuation")
     @Operation(summary = "Get inventory valuation report at cost")
     public ResponseEntity<ApiResponse<ValuationReportDTO>> getValuationReport() {

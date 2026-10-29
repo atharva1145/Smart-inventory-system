@@ -159,10 +159,14 @@ public class OrderService {
         }
 
         BigDecimal discount = request.getDiscountAmount() != null ? request.getDiscountAmount() : BigDecimal.ZERO;
-        BigDecimal total = subtotal.subtract(discount);
-        if (total.compareTo(BigDecimal.ZERO) < 0) {
-            total = BigDecimal.ZERO;
+        BigDecimal taxableAmount = subtotal.subtract(discount);
+        if (taxableAmount.compareTo(BigDecimal.ZERO) < 0) {
+            taxableAmount = BigDecimal.ZERO;
         }
+
+        BigDecimal taxRate = request.getTaxRate() != null ? request.getTaxRate() : BigDecimal.ZERO;
+        BigDecimal taxAmount = taxableAmount.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal total = taxableAmount.add(taxAmount).setScale(2, RoundingMode.HALF_UP);
 
         // 6. Build and Persist Order
         Order order = new Order(
@@ -171,6 +175,7 @@ public class OrderService {
                 OrderStatus.PENDING,
                 subtotal,
                 discount,
+                taxAmount,
                 total,
                 request.getIdempotencyKey(),
                 request.getNotes(),

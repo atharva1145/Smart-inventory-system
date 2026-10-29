@@ -1,6 +1,7 @@
 package com.smartinventory.customer;
 
 import com.smartinventory.common.exception.ResourceNotFoundException;
+import com.smartinventory.order.OrderRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,26 +14,38 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerRepository customerRepository, OrderRepository orderRepository) {
         this.customerRepository = customerRepository;
+        this.orderRepository = orderRepository;
     }
 
     @Transactional(readOnly = true)
     public Page<CustomerDTO> searchCustomers(String search, Pageable pageable) {
-        return customerRepository.searchCustomers(search, pageable).map(CustomerDTO::fromEntity);
+        return customerRepository.searchCustomers(search, pageable).map(c -> {
+            long count = orderRepository.countOrdersByCustomerId(c.getId());
+            Double spend = orderRepository.sumSpendByCustomerId(c.getId());
+            return CustomerDTO.fromEntity(c, count, spend);
+        });
     }
 
     @Transactional(readOnly = true)
     public List<CustomerDTO> getAllCustomers() {
-        return customerRepository.findAll().stream().map(CustomerDTO::fromEntity).collect(Collectors.toList());
+        return customerRepository.findAll().stream().map(c -> {
+            long count = orderRepository.countOrdersByCustomerId(c.getId());
+            Double spend = orderRepository.sumSpendByCustomerId(c.getId());
+            return CustomerDTO.fromEntity(c, count, spend);
+        }).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public CustomerDTO getCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", "id", id));
-        return CustomerDTO.fromEntity(customer);
+        long count = orderRepository.countOrdersByCustomerId(customer.getId());
+        Double spend = orderRepository.sumSpendByCustomerId(customer.getId());
+        return CustomerDTO.fromEntity(customer, count, spend);
     }
 
     @Transactional

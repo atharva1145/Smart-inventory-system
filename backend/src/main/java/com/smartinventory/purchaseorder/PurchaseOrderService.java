@@ -3,6 +3,8 @@ package com.smartinventory.purchaseorder;
 import com.smartinventory.common.exception.BadRequestException;
 import com.smartinventory.common.exception.InvalidStateTransitionException;
 import com.smartinventory.common.exception.ResourceNotFoundException;
+import com.smartinventory.inventory.InventoryBalance;
+import com.smartinventory.inventory.InventoryBalanceRepository;
 import com.smartinventory.product.Product;
 import com.smartinventory.product.ProductRepository;
 import com.smartinventory.purchaseorder.dto.*;
@@ -17,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -27,13 +30,16 @@ public class PurchaseOrderService {
     private final PurchaseOrderRepository purchaseOrderRepository;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
+    private final InventoryBalanceRepository balanceRepository;
 
     public PurchaseOrderService(PurchaseOrderRepository purchaseOrderRepository,
                                 SupplierRepository supplierRepository,
-                                ProductRepository productRepository) {
+                                ProductRepository productRepository,
+                                InventoryBalanceRepository balanceRepository) {
         this.purchaseOrderRepository = purchaseOrderRepository;
         this.supplierRepository = supplierRepository;
         this.productRepository = productRepository;
+        this.balanceRepository = balanceRepository;
     }
 
     @Transactional(readOnly = true)
@@ -108,6 +114,43 @@ public class PurchaseOrderService {
 
         po.setStatus(PurchaseOrderStatus.CANCELLED);
         return PurchaseOrderDTO.fromEntity(purchaseOrderRepository.save(po));
+    }
+
+    @Transactional
+    public PurchaseOrderDTO autoGeneratePurchaseOrder(Long supplierId, String actorUsername) {
+        Supplier supplier = supplierRepository.findById(supplierId)
+                .orElseThrow(() -> new ResourceNotFoundException("Supplier", "id", supplierId));
+
+        List<InventoryBalance> lowStock = balanceRepository.findLowStockBalances();
+        if (lowStock.isEmpty()) {
+            throw new BadRequestException("No low-stock items require replenishment at this time.");
+        }
+
+        String poNumber = generatePoNumber();
+        BigDecimal totalCost = BigDecimal.ZERO;
+        PurchaseOrder po = new PurchaseOrder(
+                poNumber,
+                supplier,
+                PurchaseOrderStatus.DRAFT,
+                LocalDate.now().plusDays(7),
+                BigDecimal.ZERO,
+                "Auto-generated replenishment draft for low-stock products",
+                actorUsername
+        );
+
+        for (InventoryBalance b : lowStock) {
+            Product p = b.getProduct();
+            int qty = Math.max(10, (p.getReorderLevel() * 2) - b.getAvailableQuantity());
+            BigDecimal unitCost = p.getCostPrice();
+            BigDecimal lineTotal = unitCost.multiply(BigDecimal.valueOf(qty)).setScale(2, RoundingMode.HALF_UP);
+            totalCost = totalCost.add(lineTotal);
+
+            po.addItem(new PurchaseOrderItem(p, qty, unitCost, lineTotal));
+        }
+
+        po.setTotalCost(totalCost);
+        PurchaseOrder saved = purchaseOrderRepository.save(po);
+        return PurchaseOrderDTO.fromEntity(saved);
     }
 
     private synchronized String generatePoNumber() {
