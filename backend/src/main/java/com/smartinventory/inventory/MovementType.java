@@ -1,0 +1,11 @@
+package com.smartinventory.inventory;
+
+public enum MovementType {
+    INITIAL_STOCK,
+    PURCHASE_RECEIPT,
+    ORDER_RESERVED,
+    ORDER_RELEASED,
+    ORDER_FULFILLED,
+    MANUAL_ADJUSTMENT_ADD,
+    MANUAL_ADJUSTMENT_DEDUCT
+}

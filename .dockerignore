@@ -1,0 +1,12 @@
+**/.git
+**/.gitignore
+**/node_modules
+**/dist
+**/target
+**/*.log
+**/.env
+**/.env.*
+**/.vscode
+**/.idea
+**/Thumbs.db
+**/.DS_Store
