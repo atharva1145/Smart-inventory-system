@@ -31,6 +31,11 @@ A production-grade, modular monolith **Smart Inventory & Order Management System
 | **Delayed inventory notifications** | Real-time Server-Sent Events (SSE) stream pushing low-stock and order alerts directly to connected browsers. |
 | **Accounting & reporting friction** | Server-side and client-side one-click CSV data export for orders, inventory balances, and movements. |
 | **Brute-force security risks** | In-memory token bucket rate limiting on authentication login endpoints. |
+| **Reorder friction & stockouts** | Smart Restock Assistant calculating replenishment deficits with 1-Click auto-generation of draft Purchase Orders. |
+| **Tax compliance & accounting** | Configurable order sales tax (`taxRate`, `taxAmount`) computed server-side with line-item invoice breakdown. |
+| **Customer visibility & retention** | Customer CRM lifetime metrics (`totalOrders`, `totalSpend`) and automatic VIP / Active / New account tiers. |
+| **Fast SKU / Barcode lookup** | Global `Ctrl+K` / `Cmd+K` keyboard shortcut triggering camera/USB barcode scanner from any view. |
+| **Frontend bundle performance** | Rollup `manualChunks` vendor code-splitting reducing main bundle size from 700+ kB to under 200 kB. |
 
 ---
 
