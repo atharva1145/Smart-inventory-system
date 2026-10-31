@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -316,6 +317,10 @@ public class InventoryService {
             BigDecimal unitCost = p.getCostPrice();
             BigDecimal estimatedCost = unitCost.multiply(BigDecimal.valueOf(suggestedQty));
 
+            double burnRate = Math.max(0.5, Math.round(((double) Math.max(5, reorder) / 10.0) * 10.0) / 10.0);
+            int daysUntilStockout = available <= 0 ? 0 : Math.max(1, (int) Math.round(available / burnRate));
+            String risk = available <= 0 ? "OUT_OF_STOCK" : (daysUntilStockout <= 5 ? "CRITICAL" : "WARNING");
+
             suggestions.add(new RestockSuggestionDTO(
                     p.getId(),
                     p.getSku(),
@@ -328,7 +333,10 @@ public class InventoryService {
                     unitCost,
                     estimatedCost,
                     defaultSupplier != null ? defaultSupplier.getId() : null,
-                    defaultSupplier != null ? defaultSupplier.getName() : "Standard Supplier"
+                    defaultSupplier != null ? defaultSupplier.getName() : "Standard Supplier",
+                    burnRate,
+                    daysUntilStockout,
+                    risk
             ));
         }
         return suggestions;
@@ -340,24 +348,46 @@ public class InventoryService {
         long totalProducts = allBalances.stream().map(b -> b.getProduct().getId()).distinct().count();
         long totalOnHandUnits = allBalances.stream().mapToLong(InventoryBalance::getOnHandQuantity).sum();
 
-        BigDecimal totalValuation = allBalances.stream()
-                .map(b -> b.getProduct().getCostPrice().multiply(BigDecimal.valueOf(b.getOnHandQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalValuation = BigDecimal.ZERO;
+        BigDecimal totalRetailValue = BigDecimal.ZERO;
 
-        List<ValuationReportDTO.ValuationItemDTO> items = allBalances.stream().map(b -> {
-            BigDecimal itemTotalCost = b.getProduct().getCostPrice().multiply(BigDecimal.valueOf(b.getOnHandQuantity()));
-            return new ValuationReportDTO.ValuationItemDTO(
-                    b.getProduct().getId(),
-                    b.getProduct().getSku(),
-                    b.getProduct().getName(),
-                    b.getProduct().getCategory() != null ? b.getProduct().getCategory().getName() : "Uncategorized",
-                    b.getOnHandQuantity(),
-                    b.getProduct().getCostPrice(),
-                    itemTotalCost
-            );
-        }).collect(Collectors.toList());
+        List<ValuationReportDTO.ValuationItemDTO> items = new java.util.ArrayList<>();
+        for (InventoryBalance b : allBalances) {
+            Product p = b.getProduct();
+            int qty = b.getOnHandQuantity();
+            BigDecimal cost = p.getCostPrice();
+            BigDecimal sell = p.getSellingPrice();
+            BigDecimal itemTotalCost = cost.multiply(BigDecimal.valueOf(qty));
+            BigDecimal itemRetailValue = sell.multiply(BigDecimal.valueOf(qty));
+            BigDecimal itemProfit = itemRetailValue.subtract(itemTotalCost);
+            BigDecimal margin = sell.compareTo(BigDecimal.ZERO) > 0
+                    ? sell.subtract(cost).divide(sell, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
+                    : BigDecimal.ZERO;
 
-        return new ValuationReportDTO(totalProducts, totalOnHandUnits, totalValuation, items);
+            totalValuation = totalValuation.add(itemTotalCost);
+            totalRetailValue = totalRetailValue.add(itemRetailValue);
+
+            items.add(new ValuationReportDTO.ValuationItemDTO(
+                    p.getId(),
+                    p.getSku(),
+                    p.getName(),
+                    p.getCategory() != null ? p.getCategory().getName() : "Uncategorized",
+                    qty,
+                    cost,
+                    itemTotalCost,
+                    sell,
+                    itemRetailValue,
+                    itemProfit,
+                    margin
+            ));
+        }
+
+        BigDecimal totalProfit = totalRetailValue.subtract(totalValuation);
+        BigDecimal avgMargin = totalRetailValue.compareTo(BigDecimal.ZERO) > 0
+                ? totalProfit.divide(totalRetailValue, 4, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
+                : BigDecimal.ZERO;
+
+        return new ValuationReportDTO(totalProducts, totalOnHandUnits, totalValuation, totalRetailValue, totalProfit, avgMargin, items);
     }
 
     @Transactional(readOnly = true)

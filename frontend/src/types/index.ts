@@ -43,6 +43,7 @@ export interface WarehouseStockInfo {
   warehouseId: number;
   warehouseCode: string;
   warehouseName: string;
+  binLocation?: string;
   onHandQuantity: number;
   reservedQuantity: number;
   availableQuantity: number;
@@ -54,6 +55,7 @@ export interface Product {
   name: string;
   description?: string;
   imageUrl?: string;
+  binLocation?: string;
   categoryId?: number;
   categoryName?: string;
   costPrice: number;
@@ -78,6 +80,7 @@ export interface InventoryOverview {
   warehouseId: number;
   warehouseName: string;
   warehouseCode: string;
+  binLocation?: string;
   onHandQuantity: number;
   reservedQuantity: number;
   availableQuantity: number;
@@ -291,12 +294,19 @@ export interface ValuationItem {
   onHand: number;
   unitCost: number;
   totalCost: number;
+  sellingPrice?: number;
+  totalRetailValue?: number;
+  potentialGrossProfit?: number;
+  grossMarginPercent?: number;
 }
 
 export interface ValuationReportDTO {
   totalProducts: number;
   totalOnHandUnits: number;
   totalValuationAtCost: number;
+  totalRetailValue?: number;
+  totalPotentialGrossProfit?: number;
+  averageGrossMarginPercent?: number;
   items: ValuationItem[];
 }
 
@@ -370,6 +380,9 @@ export interface RestockSuggestion {
   estimatedCost: number;
   suggestedSupplierId?: number;
   suggestedSupplierName?: string;
+  dailyBurnRate?: number;
+  daysUntilStockout?: number;
+  stockoutRisk?: string;
 }
 
 export interface AuditLog {

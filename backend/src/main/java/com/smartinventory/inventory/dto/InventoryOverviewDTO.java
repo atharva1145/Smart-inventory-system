@@ -23,6 +23,7 @@ public class InventoryOverviewDTO {
     private BigDecimal totalValueAtCost;
     private boolean lowStock;
     private boolean outOfStock;
+    private String binLocation;
 
     public InventoryOverviewDTO() {
     }
@@ -39,6 +40,7 @@ public class InventoryOverviewDTO {
         dto.setWarehouseId(balance.getWarehouse().getId());
         dto.setWarehouseName(balance.getWarehouse().getName());
         dto.setWarehouseCode(balance.getWarehouse().getCode());
+        dto.setBinLocation(balance.getBinLocation() != null ? balance.getBinLocation() : balance.getProduct().getBinLocation());
         dto.setOnHandQuantity(balance.getOnHandQuantity());
         dto.setReservedQuantity(balance.getReservedQuantity());
         int avail = balance.getAvailableQuantity();
@@ -191,5 +193,13 @@ public class InventoryOverviewDTO {
 
     public void setOutOfStock(boolean outOfStock) {
         this.outOfStock = outOfStock;
+    }
+
+    public String getBinLocation() {
+        return binLocation;
+    }
+
+    public void setBinLocation(String binLocation) {
+        this.binLocation = binLocation;
     }
 }

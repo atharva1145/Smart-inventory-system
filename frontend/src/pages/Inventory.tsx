@@ -154,7 +154,14 @@ export const Inventory: React.FC = () => {
                     <tr key={b.id} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-3.5">
                         <div className="font-semibold text-slate-900">{b.productName}</div>
-                        <div className="text-[10px] font-mono text-slate-400">{b.productSku}</div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[10px] font-mono text-slate-400">{b.productSku}</span>
+                          {b.binLocation && (
+                            <span className="text-[9px] font-mono px-1 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-semibold" title="Shelf Location">
+                              📍 {b.binLocation}
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-3.5 text-slate-600 font-medium">
                         {b.warehouseName}

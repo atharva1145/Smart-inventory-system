@@ -37,6 +37,9 @@ public class InventoryBalance {
     @Column(name = "reserved_quantity", nullable = false)
     private Integer reservedQuantity = 0;
 
+    @Column(name = "bin_location", length = 50)
+    private String binLocation;
+
     @Version
     @Column(nullable = false)
     private Long version = 0L;
@@ -107,6 +110,14 @@ public class InventoryBalance {
 
     public void setReservedQuantity(Integer reservedQuantity) {
         this.reservedQuantity = reservedQuantity;
+    }
+
+    public String getBinLocation() {
+        return binLocation;
+    }
+
+    public void setBinLocation(String binLocation) {
+        this.binLocation = binLocation;
     }
 
     public Long getVersion() {

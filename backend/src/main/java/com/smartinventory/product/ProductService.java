@@ -85,7 +85,8 @@ public class ProductService {
                 request.getSellingPrice(),
                 request.getReorderLevel(),
                 request.getUnitOfMeasure(),
-                request.getImageUrl()
+                request.getImageUrl(),
+                request.getBinLocation()
         );
 
         Product savedProduct = productRepository.save(product);
@@ -148,6 +149,9 @@ public class ProductService {
         if (request.getImageUrl() != null) {
             product.setImageUrl(request.getImageUrl());
         }
+        if (request.getBinLocation() != null) {
+            product.setBinLocation(request.getBinLocation());
+        }
 
         Product saved = productRepository.save(product);
         return enrichWithStock(saved);
@@ -189,6 +193,7 @@ public class ProductService {
                         b.getWarehouse().getId(),
                         b.getWarehouse().getCode(),
                         b.getWarehouse().getName(),
+                        b.getBinLocation() != null ? b.getBinLocation() : product.getBinLocation(),
                         b.getOnHandQuantity(),
                         b.getReservedQuantity()
                 ))

@@ -19,6 +19,7 @@ interface ParsedProduct {
   unitOfMeasure: string;
   initialStock: number;
   imageUrl?: string;
+  binLocation?: string;
   isValid: boolean;
   error?: string;
 }
@@ -41,6 +42,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ isOpen, onClos
         unitOfMeasure: p.unitOfMeasure?.trim() || 'UNIT',
         initialStock: Number(p.initialStock) || 0,
         imageUrl: p.imageUrl?.trim() || undefined,
+        binLocation: p.binLocation?.trim() || undefined,
       }));
       return api.post('/products/bulk', payload);
     },
@@ -64,10 +66,10 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ isOpen, onClos
 
   const handleDownloadSample = () => {
     const csvContent =
-      'sku,name,description,costPrice,sellingPrice,reorderLevel,unitOfMeasure,initialStock,imageUrl\n' +
-      'SKU-DEMO-01,Heavy Duty Industrial Gloves,Reinforced nitrile gloves size L,4.50,12.00,20,PAIR,50,https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400\n' +
-      'SKU-DEMO-02,Laser Distance Meter,Digital 50m rangefinder with backlit LCD,28.00,59.99,10,UNIT,25,https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400\n' +
-      'SKU-DEMO-03,Kraft Shipping Boxes 12x12,Corrugated cardboard boxes 25-pack,15.00,32.50,30,BUNDLE,40,\n';
+      'sku,name,description,costPrice,sellingPrice,reorderLevel,unitOfMeasure,initialStock,imageUrl,binLocation\n' +
+      'SKU-DEMO-01,Heavy Duty Industrial Gloves,Reinforced nitrile gloves size L,4.50,12.00,20,PAIR,50,https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400,A-02-S1-B3\n' +
+      'SKU-DEMO-02,Laser Distance Meter,Digital 50m rangefinder with backlit LCD,28.00,59.99,10,UNIT,25,https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=400,B-04-S3-B8\n' +
+      'SKU-DEMO-03,Kraft Shipping Boxes 12x12,Corrugated cardboard boxes 25-pack,15.00,32.50,30,BUNDLE,40,,C-01-S4-B2\n';
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -96,6 +98,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ isOpen, onClos
     const uomIdx = headers.indexOf('unitofmeasure');
     const stockIdx = headers.indexOf('initialstock');
     const imageIdx = headers.indexOf('imageurl');
+    const binIdx = headers.indexOf('binlocation');
 
     if (skuIdx === -1 || nameIdx === -1 || costIdx === -1 || sellIdx === -1) {
       setError('CSV header must contain at least: sku, name, costPrice, sellingPrice');
@@ -115,6 +118,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ isOpen, onClos
       const uom = uomIdx !== -1 && cols[uomIdx] ? cols[uomIdx] : 'UNIT';
       const stock = stockIdx !== -1 ? parseInt(cols[stockIdx]) : 0;
       const imageUrl = imageIdx !== -1 && cols[imageIdx] ? cols[imageIdx] : undefined;
+      const binLocation = binIdx !== -1 && cols[binIdx] ? cols[binIdx] : undefined;
 
       let isValid = true;
       let errorMsg = '';
@@ -148,6 +152,7 @@ export const BulkImportModal: React.FC<BulkImportModalProps> = ({ isOpen, onClos
         unitOfMeasure: uom,
         initialStock: isNaN(stock) ? 0 : stock,
         imageUrl,
+        binLocation,
         isValid,
         error: errorMsg,
       });

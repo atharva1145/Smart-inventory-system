@@ -41,6 +41,11 @@ A production-grade, modular monolith **Smart Inventory & Order Management System
 | **Slow manual item onboarding** | Bulk CSV Product & Stock Importer with downloadable sample template, preview parser, and batch validation. |
 | **Order status ambiguity** | Visual Order Status Stepper & Progress Pipeline with timestamps and audit transition history. |
 | **Multi-warehouse stock visibility** | Warehouse Stock Allocation Matrix showing on-hand/reserved breakdown per warehouse on each product. |
+| **Physical warehouse navigation** | Warehouse Bin / Shelf Location Tracking (`Aisle-Shelf-Bin`) on stock balances, product catalog, and packing lists. |
+| **Uncertain stockout timelines** | Stock Burn-Rate & Depletion Risk Forecaster calculating average daily consumption and remaining days until run-out. |
+| **Profitability blindness** | Gross Profit Margin Analytics reporting cost vs. projected retail valuation and margin percentages. |
+| **Disaster recovery & data safety** | One-click Automated Database Backup Script (`backup-db.bat`) generating timestamped SQL dumps. |
+| **API integration friction** | Turnkey Postman Collection (`smart-inventory.postman_collection.json`) with automated JWT authentication scripts. |
 
 ---
 

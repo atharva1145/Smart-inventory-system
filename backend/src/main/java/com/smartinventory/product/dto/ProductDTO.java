@@ -19,6 +19,7 @@ public class ProductDTO {
     private String unitOfMeasure;
     private boolean active;
     private String imageUrl;
+    private String binLocation;
     private Integer onHandQuantity;
     private Integer reservedQuantity;
     private Integer availableQuantity;
@@ -30,6 +31,7 @@ public class ProductDTO {
         private Long warehouseId;
         private String warehouseCode;
         private String warehouseName;
+        private String binLocation;
         private int onHandQuantity;
         private int reservedQuantity;
         private int availableQuantity;
@@ -37,9 +39,14 @@ public class ProductDTO {
         public WarehouseStockInfo() {}
 
         public WarehouseStockInfo(Long warehouseId, String warehouseCode, String warehouseName, int onHand, int reserved) {
+            this(warehouseId, warehouseCode, warehouseName, null, onHand, reserved);
+        }
+
+        public WarehouseStockInfo(Long warehouseId, String warehouseCode, String warehouseName, String binLocation, int onHand, int reserved) {
             this.warehouseId = warehouseId;
             this.warehouseCode = warehouseCode;
             this.warehouseName = warehouseName;
+            this.binLocation = binLocation;
             this.onHandQuantity = onHand;
             this.reservedQuantity = reserved;
             this.availableQuantity = Math.max(0, onHand - reserved);
@@ -51,6 +58,8 @@ public class ProductDTO {
         public void setWarehouseCode(String warehouseCode) { this.warehouseCode = warehouseCode; }
         public String getWarehouseName() { return warehouseName; }
         public void setWarehouseName(String warehouseName) { this.warehouseName = warehouseName; }
+        public String getBinLocation() { return binLocation; }
+        public void setBinLocation(String binLocation) { this.binLocation = binLocation; }
         public int getOnHandQuantity() { return onHandQuantity; }
         public void setOnHandQuantity(int onHandQuantity) { this.onHandQuantity = onHandQuantity; }
         public int getReservedQuantity() { return reservedQuantity; }
@@ -69,6 +78,7 @@ public class ProductDTO {
         dto.setName(product.getName());
         dto.setDescription(product.getDescription());
         dto.setImageUrl(product.getImageUrl());
+        dto.setBinLocation(product.getBinLocation());
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getId());
             dto.setCategoryName(product.getCategory().getName());
@@ -211,6 +221,14 @@ public class ProductDTO {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getBinLocation() {
+        return binLocation;
+    }
+
+    public void setBinLocation(String binLocation) {
+        this.binLocation = binLocation;
     }
 
     public java.util.List<WarehouseStockInfo> getWarehouseStocks() {

@@ -229,7 +229,17 @@ export const Products: React.FC = () => {
                             </div>
                             <div>
                               <div className="font-semibold text-slate-900">{p.name}</div>
-                              <div className="text-[10px] font-mono text-slate-400">{p.sku}</div>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[10px] font-mono text-slate-400">{p.sku}</span>
+                                {p.binLocation && (
+                                  <span
+                                    className="text-[9px] font-mono px-1 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-semibold"
+                                    title="Warehouse Shelf / Bin Location"
+                                  >
+                                    📍 {p.binLocation}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </td>
@@ -239,8 +249,13 @@ export const Products: React.FC = () => {
                         <td className="px-6 py-3.5 text-right font-medium text-slate-600">
                           ${p.costPrice.toFixed(2)}
                         </td>
-                        <td className="px-6 py-3.5 text-right font-bold text-slate-900">
-                          ${p.sellingPrice.toFixed(2)}
+                        <td className="px-6 py-3.5 text-right">
+                          <div className="font-bold text-slate-900">${p.sellingPrice.toFixed(2)}</div>
+                          {p.sellingPrice > 0 && (
+                            <div className="text-[10px] text-emerald-600 font-semibold font-mono">
+                              +{(((p.sellingPrice - p.costPrice) / p.sellingPrice) * 100).toFixed(0)}% margin
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-3.5 text-center">
                           <div className="inline-flex items-center gap-1 font-semibold">

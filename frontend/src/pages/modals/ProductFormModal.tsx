@@ -27,6 +27,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [unitOfMeasure, setUnitOfMeasure] = useState('UNIT');
   const [initialStock, setInitialStock] = useState<number>(0);
   const [imageUrl, setImageUrl] = useState('');
+  const [binLocation, setBinLocation] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const { data: categoriesData } = useQuery<ApiResponse<Category[]>>({
@@ -49,6 +50,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setReorderLevel(productToEdit.reorderLevel);
       setUnitOfMeasure(productToEdit.unitOfMeasure);
       setImageUrl(productToEdit.imageUrl || '');
+      setBinLocation(productToEdit.binLocation || '');
     } else {
       setSku('');
       setName('');
@@ -60,6 +62,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setUnitOfMeasure('UNIT');
       setInitialStock(0);
       setImageUrl('');
+      setBinLocation('');
     }
     setError(null);
   }, [productToEdit, isOpen]);
@@ -76,6 +79,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           reorderLevel: Number(reorderLevel),
           unitOfMeasure,
           imageUrl: imageUrl || undefined,
+          binLocation: binLocation || undefined,
         });
       } else {
         return api.post('/products', {
@@ -89,6 +93,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           unitOfMeasure,
           initialStock: Number(initialStock),
           imageUrl: imageUrl || undefined,
+          binLocation: binLocation || undefined,
         });
       }
     },
@@ -218,6 +223,17 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               placeholder="e.g. UNIT, BOX, PACK, KG"
             />
           </div>
+        </div>
+
+        <div>
+          <label className="block font-semibold text-slate-700 mb-1">Warehouse Bin / Shelf Location</label>
+          <input
+            type="text"
+            value={binLocation}
+            onChange={(e) => setBinLocation(e.target.value.toUpperCase())}
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 font-mono uppercase focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+            placeholder="e.g. A-03-S2-B12 (Aisle 3, Shelf 2, Bin 12)"
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

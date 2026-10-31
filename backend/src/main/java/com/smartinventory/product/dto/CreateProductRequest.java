@@ -44,6 +44,9 @@ public class CreateProductRequest {
     @Size(max = 500, message = "Image URL must not exceed 500 characters")
     private String imageUrl;
 
+    @Size(max = 50, message = "Bin location must not exceed 50 characters")
+    private String binLocation;
+
     public CreateProductRequest() {
     }
 
@@ -133,5 +136,13 @@ public class CreateProductRequest {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getBinLocation() {
+        return binLocation;
+    }
+
+    public void setBinLocation(String binLocation) {
+        this.binLocation = binLocation;
     }
 }
