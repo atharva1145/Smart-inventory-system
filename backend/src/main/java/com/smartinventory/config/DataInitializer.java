@@ -191,26 +191,30 @@ public class DataInitializer implements CommandLineRunner {
 
         Product p1 = productRepository.save(new Product(
                 "SKU-SCAN-01", "Wireless 2D Barcode Scanner", "High precision 2D bluetooth handheld scanner with cradle",
-                electronics, new BigDecimal("45.00"), new BigDecimal("89.99"), 15, "UNIT"
+                electronics, new BigDecimal("45.00"), new BigDecimal("89.99"), 15, "UNIT",
+                "https://images.unsplash.com/photo-1590396033609-f1947a5089df?auto=format&fit=crop&w=400&q=80"
         ));
         createStock(p1, warehouse, 60, "admin");
 
         Product p2 = productRepository.save(new Product(
                 "SKU-TAPE-01", "Heavy-Duty Packing Tape (6-Pack)", "Reinforced 3-inch industrial sealing tape",
-                packaging, new BigDecimal("8.50"), new BigDecimal("18.00"), 25, "PACK"
+                packaging, new BigDecimal("8.50"), new BigDecimal("18.00"), 25, "PACK",
+                "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?auto=format&fit=crop&w=400&q=80"
         ));
         createStock(p2, warehouse, 120, "admin");
 
         Product p3 = productRepository.save(new Product(
                 "SKU-LABEL-01", "Direct Thermal Shipping Labels", "4x6 inch blank thermal shipping labels (1000/roll)",
-                office, new BigDecimal("6.00"), new BigDecimal("14.50"), 40, "ROLL"
+                office, new BigDecimal("6.00"), new BigDecimal("14.50"), 40, "ROLL",
+                "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=400&q=80"
         ));
         // Intentionally low stock to demo alert
         createStock(p3, warehouse, 8, "admin");
 
         Product p4 = productRepository.save(new Product(
                 "SKU-SCALE-01", "Digital Shipping Scale 150kg", "Heavy-duty platform scale with USB PC connectivity",
-                electronics, new BigDecimal("70.00"), new BigDecimal("139.00"), 5, "UNIT"
+                electronics, new BigDecimal("70.00"), new BigDecimal("139.00"), 5, "UNIT",
+                "https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=400&q=80"
         ));
         createStock(p4, warehouse, 18, "admin");
 

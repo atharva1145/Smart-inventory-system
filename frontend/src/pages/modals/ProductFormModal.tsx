@@ -26,6 +26,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   const [reorderLevel, setReorderLevel] = useState<number>(10);
   const [unitOfMeasure, setUnitOfMeasure] = useState('UNIT');
   const [initialStock, setInitialStock] = useState<number>(0);
+  const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const { data: categoriesData } = useQuery<ApiResponse<Category[]>>({
@@ -47,6 +48,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setSellingPrice(productToEdit.sellingPrice);
       setReorderLevel(productToEdit.reorderLevel);
       setUnitOfMeasure(productToEdit.unitOfMeasure);
+      setImageUrl(productToEdit.imageUrl || '');
     } else {
       setSku('');
       setName('');
@@ -57,6 +59,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
       setReorderLevel(10);
       setUnitOfMeasure('UNIT');
       setInitialStock(0);
+      setImageUrl('');
     }
     setError(null);
   }, [productToEdit, isOpen]);
@@ -72,6 +75,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           sellingPrice: Number(sellingPrice),
           reorderLevel: Number(reorderLevel),
           unitOfMeasure,
+          imageUrl: imageUrl || undefined,
         });
       } else {
         return api.post('/products', {
@@ -84,6 +88,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           reorderLevel: Number(reorderLevel),
           unitOfMeasure,
           initialStock: Number(initialStock),
+          imageUrl: imageUrl || undefined,
         });
       }
     },
@@ -146,6 +151,31 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               placeholder="e.g. Industrial Barcode Scanner"
             />
+          </div>
+        </div>
+
+        <div>
+          <label className="block font-semibold text-slate-700 mb-1">Product Image URL (Optional)</label>
+          <div className="flex items-center gap-3">
+            <input
+              type="url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              className="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              placeholder="https://example.com/images/product.jpg"
+            />
+            {imageUrl && (
+              <div className="w-10 h-10 rounded-lg border border-slate-200 overflow-hidden shrink-0 bg-slate-100 flex items-center justify-center">
+                <img
+                  src={imageUrl}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
 

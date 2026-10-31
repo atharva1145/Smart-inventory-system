@@ -59,6 +59,10 @@ public class Product {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    @Size(max = 500)
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
@@ -70,6 +74,11 @@ public class Product {
 
     public Product(String sku, String name, String description, Category category,
                    BigDecimal costPrice, BigDecimal sellingPrice, Integer reorderLevel, String unitOfMeasure) {
+        this(sku, name, description, category, costPrice, sellingPrice, reorderLevel, unitOfMeasure, null);
+    }
+
+    public Product(String sku, String name, String description, Category category,
+                   BigDecimal costPrice, BigDecimal sellingPrice, Integer reorderLevel, String unitOfMeasure, String imageUrl) {
         this.sku = sku;
         this.name = name;
         this.description = description;
@@ -78,6 +87,7 @@ public class Product {
         this.sellingPrice = sellingPrice;
         this.reorderLevel = reorderLevel != null ? reorderLevel : 10;
         this.unitOfMeasure = unitOfMeasure != null ? unitOfMeasure : "UNIT";
+        this.imageUrl = imageUrl;
         this.active = true;
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
@@ -166,6 +176,14 @@ public class Product {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Instant getCreatedAt() {

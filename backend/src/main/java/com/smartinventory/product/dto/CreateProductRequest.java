@@ -41,6 +41,9 @@ public class CreateProductRequest {
 
     private Long warehouseId;
 
+    @Size(max = 500, message = "Image URL must not exceed 500 characters")
+    private String imageUrl;
+
     public CreateProductRequest() {
     }
 
@@ -122,5 +125,13 @@ public class CreateProductRequest {
 
     public void setWarehouseId(Long warehouseId) {
         this.warehouseId = warehouseId;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

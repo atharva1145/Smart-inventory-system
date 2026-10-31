@@ -39,11 +39,21 @@ export interface Warehouse {
   updatedAt?: string;
 }
 
+export interface WarehouseStockInfo {
+  warehouseId: number;
+  warehouseCode: string;
+  warehouseName: string;
+  onHandQuantity: number;
+  reservedQuantity: number;
+  availableQuantity: number;
+}
+
 export interface Product {
   id: number;
   sku: string;
   name: string;
   description?: string;
+  imageUrl?: string;
   categoryId?: number;
   categoryName?: string;
   costPrice: number;
@@ -54,6 +64,7 @@ export interface Product {
   onHandQuantity?: number;
   reservedQuantity?: number;
   availableQuantity?: number;
+  warehouseStocks?: WarehouseStockInfo[];
   createdAt: string;
   updatedAt: string;
 }
@@ -359,4 +370,15 @@ export interface RestockSuggestion {
   estimatedCost: number;
   suggestedSupplierId?: number;
   suggestedSupplierName?: string;
+}
+
+export interface AuditLog {
+  id: number;
+  entityName: string;
+  entityId: string;
+  action: string;
+  actorUsername: string;
+  details?: string;
+  ipAddress?: string;
+  createdAt: string;
 }

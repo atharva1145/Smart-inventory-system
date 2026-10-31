@@ -5,6 +5,7 @@ import api, { getErrorMessage } from '../../services/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Badge } from '../../components/common/Badge';
 import { Barcode } from '../../components/common/Barcode';
+import { OrderStatusStepper } from '../../components/orders/OrderStatusStepper';
 import {
   Printer,
   CheckCircle,
@@ -99,6 +100,9 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Visual Lifecycle Stepper */}
+        <OrderStatusStepper order={order} />
 
         {/* Action Transitions Ribbon (Non-printable) */}
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl bg-white border border-slate-200 print:hidden">

@@ -36,6 +36,11 @@ A production-grade, modular monolith **Smart Inventory & Order Management System
 | **Customer visibility & retention** | Customer CRM lifetime metrics (`totalOrders`, `totalSpend`) and automatic VIP / Active / New account tiers. |
 | **Fast SKU / Barcode lookup** | Global `Ctrl+K` / `Cmd+K` keyboard shortcut triggering camera/USB barcode scanner from any view. |
 | **Frontend bundle performance** | Rollup `manualChunks` vendor code-splitting reducing main bundle size from 700+ kB to under 200 kB. |
+| **Audit & compliance inspection** | Interactive Audit Logs & Compliance Viewer (`/admin/audit-logs`) with entity/actor filters and JSON payload inspector. |
+| **Visual warehouse picking** | High-resolution product images, thumbnails in catalog and order lines, with automated fallback avatars. |
+| **Slow manual item onboarding** | Bulk CSV Product & Stock Importer with downloadable sample template, preview parser, and batch validation. |
+| **Order status ambiguity** | Visual Order Status Stepper & Progress Pipeline with timestamps and audit transition history. |
+| **Multi-warehouse stock visibility** | Warehouse Stock Allocation Matrix showing on-hand/reserved breakdown per warehouse on each product. |
 
 ---
 

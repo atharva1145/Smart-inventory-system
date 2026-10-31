@@ -17,6 +17,7 @@ import {
   PlusCircle,
   BarChart3,
   ShieldCheck,
+  ShieldAlert,
   UserCheck,
 } from 'lucide-react';
 
@@ -118,9 +119,14 @@ export const Sidebar: React.FC = () => {
                 <BarChart3 className="w-4 h-4" /> Reports & Valuation
               </NavLink>
               {isAdmin && (
-                <NavLink to="/admin/users" className={navLinkClass}>
-                  <ShieldCheck className="w-4 h-4" /> User Administration
-                </NavLink>
+                <>
+                  <NavLink to="/admin/users" className={navLinkClass}>
+                    <ShieldCheck className="w-4 h-4" /> User Administration
+                  </NavLink>
+                  <NavLink to="/admin/audit-logs" className={navLinkClass}>
+                    <ShieldAlert className="w-4 h-4" /> System Audit Logs
+                  </NavLink>
+                </>
               )}
               <NavLink to="/profile" className={navLinkClass}>
                 <UserCheck className="w-4 h-4" /> Profile & Settings

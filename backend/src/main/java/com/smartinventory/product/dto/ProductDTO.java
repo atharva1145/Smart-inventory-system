@@ -18,11 +18,46 @@ public class ProductDTO {
     private Integer reorderLevel;
     private String unitOfMeasure;
     private boolean active;
+    private String imageUrl;
     private Integer onHandQuantity;
     private Integer reservedQuantity;
     private Integer availableQuantity;
+    private java.util.List<WarehouseStockInfo> warehouseStocks = new java.util.ArrayList<>();
     private Instant createdAt;
     private Instant updatedAt;
+
+    public static class WarehouseStockInfo {
+        private Long warehouseId;
+        private String warehouseCode;
+        private String warehouseName;
+        private int onHandQuantity;
+        private int reservedQuantity;
+        private int availableQuantity;
+
+        public WarehouseStockInfo() {}
+
+        public WarehouseStockInfo(Long warehouseId, String warehouseCode, String warehouseName, int onHand, int reserved) {
+            this.warehouseId = warehouseId;
+            this.warehouseCode = warehouseCode;
+            this.warehouseName = warehouseName;
+            this.onHandQuantity = onHand;
+            this.reservedQuantity = reserved;
+            this.availableQuantity = Math.max(0, onHand - reserved);
+        }
+
+        public Long getWarehouseId() { return warehouseId; }
+        public void setWarehouseId(Long warehouseId) { this.warehouseId = warehouseId; }
+        public String getWarehouseCode() { return warehouseCode; }
+        public void setWarehouseCode(String warehouseCode) { this.warehouseCode = warehouseCode; }
+        public String getWarehouseName() { return warehouseName; }
+        public void setWarehouseName(String warehouseName) { this.warehouseName = warehouseName; }
+        public int getOnHandQuantity() { return onHandQuantity; }
+        public void setOnHandQuantity(int onHandQuantity) { this.onHandQuantity = onHandQuantity; }
+        public int getReservedQuantity() { return reservedQuantity; }
+        public void setReservedQuantity(int reservedQuantity) { this.reservedQuantity = reservedQuantity; }
+        public int getAvailableQuantity() { return availableQuantity; }
+        public void setAvailableQuantity(int availableQuantity) { this.availableQuantity = availableQuantity; }
+    }
 
     public ProductDTO() {
     }
@@ -33,6 +68,7 @@ public class ProductDTO {
         dto.setSku(product.getSku());
         dto.setName(product.getName());
         dto.setDescription(product.getDescription());
+        dto.setImageUrl(product.getImageUrl());
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getId());
             dto.setCategoryName(product.getCategory().getName());
@@ -167,6 +203,22 @@ public class ProductDTO {
 
     public void setAvailableQuantity(Integer availableQuantity) {
         this.availableQuantity = availableQuantity;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public java.util.List<WarehouseStockInfo> getWarehouseStocks() {
+        return warehouseStocks;
+    }
+
+    public void setWarehouseStocks(java.util.List<WarehouseStockInfo> warehouseStocks) {
+        this.warehouseStocks = warehouseStocks;
     }
 
     public Instant getCreatedAt() {

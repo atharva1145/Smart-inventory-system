@@ -28,6 +28,9 @@ public class UpdateProductRequest {
 
     private Boolean active;
 
+    @Size(max = 500, message = "Image URL must not exceed 500 characters")
+    private String imageUrl;
+
     public UpdateProductRequest() {
     }
 
@@ -93,5 +96,13 @@ public class UpdateProductRequest {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

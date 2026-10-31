@@ -18,6 +18,7 @@ import { Orders } from './pages/Orders';
 import { CreateOrder } from './pages/CreateOrder';
 import { Reports } from './pages/Reports';
 import { UserAdmin } from './pages/UserAdmin';
+import { AuditLogs } from './pages/AuditLogs';
 import { Profile } from './pages/Profile';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 
@@ -78,6 +79,14 @@ export const App: React.FC = () => {
           element={
             <ProtectedRoute adminOnly>
               <UserAdmin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="admin/audit-logs"
+          element={
+            <ProtectedRoute adminOnly>
+              <AuditLogs />
             </ProtectedRoute>
           }
         />

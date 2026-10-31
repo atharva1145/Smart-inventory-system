@@ -62,6 +62,15 @@ public class ProductController {
         return new ResponseEntity<>(ApiResponse.success("Product created successfully", product), HttpStatus.CREATED);
     }
 
+    @PostMapping("/bulk")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY_MANAGER')")
+    @Operation(summary = "Bulk import products", description = "Import multiple products and initialize their stock balances")
+    public ResponseEntity<ApiResponse<java.util.List<ProductDTO>>> bulkImportProducts(@Valid @RequestBody java.util.List<CreateProductRequest> requests) {
+        String actor = SecurityUtils.getCurrentUsername();
+        java.util.List<ProductDTO> imported = productService.bulkImportProducts(requests, actor);
+        return new ResponseEntity<>(ApiResponse.success("Imported " + imported.size() + " products successfully", imported), HttpStatus.CREATED);
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY_MANAGER')")
     @Operation(summary = "Update product details")

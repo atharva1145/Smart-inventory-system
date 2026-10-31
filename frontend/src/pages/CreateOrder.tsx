@@ -278,6 +278,16 @@ export const CreateOrder: React.FC = () => {
 
                     {selected && (
                       <div className="flex items-center gap-2 mt-1.5 text-[10px]">
+                        {selected.imageUrl && (
+                          <img
+                            src={selected.imageUrl}
+                            alt={selected.name}
+                            className="w-5 h-5 rounded object-cover border border-slate-200"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        )}
                         <span className="text-slate-500">Unit Price: ${selected.sellingPrice.toFixed(2)}</span>
                         <span className="text-slate-300">•</span>
                         <span className={`font-semibold ${isInsufficient ? 'text-rose-600' : 'text-slate-700'}`}>

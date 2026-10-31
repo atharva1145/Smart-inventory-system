@@ -84,7 +84,8 @@ public class ProductService {
                 request.getCostPrice(),
                 request.getSellingPrice(),
                 request.getReorderLevel(),
-                request.getUnitOfMeasure()
+                request.getUnitOfMeasure(),
+                request.getImageUrl()
         );
 
         Product savedProduct = productRepository.save(product);
@@ -144,9 +145,21 @@ public class ProductService {
         if (request.getActive() != null) {
             product.setActive(request.getActive());
         }
+        if (request.getImageUrl() != null) {
+            product.setImageUrl(request.getImageUrl());
+        }
 
         Product saved = productRepository.save(product);
         return enrichWithStock(saved);
+    }
+
+    @Transactional
+    public List<ProductDTO> bulkImportProducts(List<CreateProductRequest> requests, String actorUsername) {
+        List<ProductDTO> imported = new java.util.ArrayList<>();
+        for (CreateProductRequest req : requests) {
+            imported.add(createProduct(req, actorUsername));
+        }
+        return imported;
     }
 
     @Transactional
@@ -169,6 +182,18 @@ public class ProductService {
         List<InventoryBalance> balances = balanceRepository.findByProductId(product.getId());
         int totalOnHand = balances.stream().mapToInt(InventoryBalance::getOnHandQuantity).sum();
         int totalReserved = balances.stream().mapToInt(InventoryBalance::getReservedQuantity).sum();
-        return ProductDTO.fromEntityWithStock(product, totalOnHand, totalReserved);
+        ProductDTO dto = ProductDTO.fromEntityWithStock(product, totalOnHand, totalReserved);
+
+        List<ProductDTO.WarehouseStockInfo> warehouseStocks = balances.stream()
+                .map(b -> new ProductDTO.WarehouseStockInfo(
+                        b.getWarehouse().getId(),
+                        b.getWarehouse().getCode(),
+                        b.getWarehouse().getName(),
+                        b.getOnHandQuantity(),
+                        b.getReservedQuantity()
+                ))
+                .toList();
+        dto.setWarehouseStocks(warehouseStocks);
+        return dto;
     }
 }
